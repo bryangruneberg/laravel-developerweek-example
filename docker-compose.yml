@@ -1,0 +1,128 @@
+version: '2.3'
+
+x-lagoon-project:
+  &lagoon-project demo-devweek-laravel
+
+x-environment:
+  &default-environment
+    LAGOON_PROJECT: *lagoon-project
+    LAGOON_ROUTE: http://demo-devweek-laravel.docker.amazee.io
+
+services:
+  # SERVICE: Laravel cli container
+  cli:
+    env_file:
+      - .lagoon.env
+      - .env.local
+    networks:
+      - amazeeio-network
+      - default
+    build:
+      context: .
+      dockerfile: lagoon/cli.dockerfile
+    image: &cli-image ${COMPOSE_PROJECT_NAME:-demo-devweek-laravel}-cli # this image will be reused as `CLI_IMAGE` in subsequent Docker builds
+    labels:
+      # Lagoon Labels
+      lagoon.type: cli-persistent
+      lagoon.persistent.name: nginx # mount the persistent storage of nginx into this container
+      lagoon.persistent: /app/storage/ # location where the persistent storage should be mounted
+    volumes:
+      - ./:/app:delegated
+    volumes_from: ### mount the ssh-agent from the pygmy or cachalot ssh-agent. Automatically removed in CI.
+      - container:amazeeio-ssh-agent ### Local overrides to mount host SSH keys. Automatically removed in CI.
+
+  # SERVICE: Laravel horizon cli container
+  clihorizon:
+    env_file:
+      - .lagoon.env
+      - .env.local
+    networks:
+      - amazeeio-network
+      - default
+    build:
+      context: .
+      dockerfile: lagoon/horizon.dockerfile
+      args:
+        CLI_IMAGE: *cli-image # Inject the name of the cli image
+    labels:
+      # Lagoon Labels
+      lagoon.type: cli-persistent
+      lagoon.persistent.name: nginx # mount the persistent storage of nginx into this container
+      lagoon.persistent: /app/storage/ # location where the persistent storage should be mounted
+    volumes:
+      - ./:/app:delegated
+    depends_on:
+      - redis
+ 
+  # SERVICE: Laravel nginx container
+  nginx:
+    env_file:
+      - .lagoon.env
+      - .env.local
+    networks:
+      - amazeeio-network
+      - default
+    build:
+      context: .
+      dockerfile: lagoon/nginx.dockerfile
+      args:
+        CLI_IMAGE: *cli-image # Inject the name of the cli image
+    labels:
+      lagoon.type: nginx-php-persistent
+      lagoon.name: nginx
+      lagoon.persistent: /app/storage/
+      lagoon.deployment.servicetype: nginx
+    environment:
+      - LAGOON_ROUTE=http://demo-devweek-laravel.docker.amazee.io
+    volumes:
+      - ./:/app:delegated
+
+
+  # SERVICE: Laravel php container
+  php:
+    env_file:
+      - .lagoon.env
+      - .env.local
+    networks:
+      - amazeeio-network
+      - default
+    build:
+      context: .
+      dockerfile: lagoon/php.dockerfile
+      args:
+        CLI_IMAGE: *cli-image # Inject the name of the cli image
+    labels:
+      lagoon.type: nginx-php-persistent
+      lagoon.name: nginx
+      lagoon.persistent: /app/storage/
+      lagoon.deployment.servicetype: php
+    volumes:
+        - ./:/app:delegated
+
+  # SERVICE: Laravel mariadb container
+  mariadb:
+    env_file:
+      - .lagoon.env
+      - .env.local
+    networks:
+      - amazeeio-network
+      - default
+    image: amazeeio/mariadb
+    labels:
+      lagoon.type: mariadb
+
+  # SERVICE: Laravel redis container
+  redis:
+    env_file:
+      - .lagoon.env
+      - .env.local
+    networks:
+      - amazeeio-network
+      - default
+    image: amazeeio/redis
+    labels:
+      lagoon.type: redis
+        
+networks:
+  amazeeio-network:
+    external: true

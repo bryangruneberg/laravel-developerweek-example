@@ -1,0 +1,62 @@
+docker-compose-yaml: docker-compose.yml
+project: demo-devweek-laravel
+
+tasks:
+  post-rollout:
+    # no need to uncomment. safe to run multiple times
+    - run:
+        name: Scaffold storage
+        command: mkdir -p /app/storage/framework/{sessions,views,cache}
+        service: cli
+    - run:
+        name: Scaffold public storage
+        command: mkdir -p /app/storage/app/public
+        service: cli
+    - run:
+        name: Scaffold public storage link
+        command: php artisan storage:link
+        service: cli
+    - run:
+        name: Lagoon-Laravel migration
+        command: php artisan migrate
+        service: cli
+    - run:
+        name: Lagoon-Laravel clear view cache
+        command: php artisan view:clear
+        service: cli
+    - run:
+        name: Lagoon-Laravel cache views 
+        command: php artisan view:cache
+        service: cli
+    - run:
+        name: Lagoon-Laravel config cache
+        command: php artisan config:cache
+        service: cli
+    - run:
+        name: Lagoon-Laravel route cache
+        command: php artisan route:cache
+        service: cli
+
+lagoon-sync:
+  mariadb:
+    config:
+      hostname: "${MARIADB_HOST:-mariadb}"
+      username: "${MARIADB_USERNAME:-lagoon}"
+      password: "${MARIADB_PASSWORD:-lagoon}"
+      port: "${MARIADB_PORT:-3306}"
+      database: "${MARIADB_DATABASE:-lagoon}"
+  files:
+    config:
+      sync-directory: "/app/storage/"
+
+#environments:
+#  main:
+#    routes:
+#      - nginx:
+#        - someproddomain.com:
+#            tls-acme: 'true'
+#            insecure: Redirect
+#        - www.someproddomain.com:
+#            tls-acme: 'true'
+#            insecure: Redirect
+
