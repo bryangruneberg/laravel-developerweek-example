@@ -47,7 +47,7 @@ lagoon-sync:
       database: "${MARIADB_DATABASE:-lagoon}"
   files:
     config:
-      sync-directory: "/app/storage/"
+      sync-directory: "/app/storage"
 
 #environments:
 #  main:
