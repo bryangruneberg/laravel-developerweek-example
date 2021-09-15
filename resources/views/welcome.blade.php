@@ -37,7 +37,7 @@
             @endif
 
             <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-
+<!--
 
                 <div class="mt-8">
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/RozCn-WGfyc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -56,13 +56,13 @@
                             https://www.amazee.io/lagoon/see-lagoon-in-action
                         </a>
                 </div>
-
+-->
 <!--
-
+-->
                 <div class="mt-8">
                     <img src="/developerweek.jpg" />
                 </div>
--->
+
                 <div class="ml-4 text-center text-sm text-gray-500 sm:text-right sm:ml-0 mt-8">
                     Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
                 </div>
