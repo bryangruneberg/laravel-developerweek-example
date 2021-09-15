@@ -12,8 +12,8 @@
                     <p class="my-4">You're logged in, {{ Auth::user()->name }}! </p>
                     <p class="my-4">Here is a Lagoon!</p>
                     <div class="text-center">
-                        <!-- <img src="/aioteam.gif" class="mx-auto" /> -->
-                        <img src="/lagoon.gif" class="mx-auto" />
+                         <img src="/aioteam.gif" class="mx-auto" />
+                        <!-- <img src="/lagoon.gif" class="mx-auto" /> -->
                     </div>
                 </div>
             </div>
