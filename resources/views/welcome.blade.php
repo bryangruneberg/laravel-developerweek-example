@@ -46,7 +46,7 @@
                 <div class="text-center dark:text-white mb-8 text-xl bold">
                     We're excited to meet you all!
                     <div class="text-right mb-8">
-                        -- The amazee.io Team
+                        -- The amazee.io Team Says Hello
                     </div>
                 </div>
                 
